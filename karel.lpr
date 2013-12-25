@@ -9,7 +9,7 @@ uses
   UKProgramaCompilado;
 
 const
-     version = '1.0';
+     version = '1.1';
 
      // MAXIMOS
      MAXENTORNOS = 100;
@@ -43,7 +43,8 @@ var
    breakPoint : boolean = false;
    continuaEjecucion : boolean = false;
    desatendido : boolean = false;
-   tmpIn, tmpOut : Text;
+   tmpIn : Text;
+   tmpXML: AnsiString;
 
    mundo : TKMundo;
    programa : TKProgramaCompilado;
@@ -325,24 +326,25 @@ begin
         xmlEsp:=TNativeXML.Create(nil);
         try
            // SUSTITUYE LAS VARIABLES
-           Assign(tmpIn, _archivoXMLCondiciones);
-           Reset(tmpIn);
-           Assign(tmpOut, '__input.tmp');
-           Rewrite(tmpOut);
+           if _archivoXMLCondiciones <> '/dev/stdin' then begin
+                 Assign(tmpIn, _archivoXMLCondiciones);
+                 Reset(tmpIn);
+           end else begin
+                 tmpIn := input;
+           end;
+           tmpXml := '';
            while not eof(tmpIn) do begin
                  Readln(tmpIn,st);
 
                  for i:=1 to 9 do begin
                      st := StringReplace(st,'{$' + IntToStr(i) + '$}',stParams[i],[rfReplaceAll]);
                  end;
-
-                 writeln(tmpOut, st);
+                 tmpXml += st + #10;
            end;
 
            Close(tmpIn);
-           Close(tmpOut);
 
-           xmlEsp.LoadFromFile('__input.tmp');
+           xmlEsp.ReadFromString(tmpXml);
 
            // LEE LAS CONDICIONES DE EJECUCION
            nodo:=xmlEsp.Root.NodeByName('condiciones');
