@@ -6142,9 +6142,11 @@ end;
 
 procedure TNativeXml.ReadFromString(const AValue: Utf8String);
 var
-  S: TStream;
+  S: TMemoryStream;
 begin
-  S := TsdStringStream.Create(AValue);
+  S := TMemoryStream.Create();
+  S.Write(Pointer(AValue)^, Length(AValue));
+  S.Seek(0, 0);
   try
     LoadFromStream(S);
   finally
@@ -9958,4 +9960,4 @@ initialization
 
 end.
 
-
+
