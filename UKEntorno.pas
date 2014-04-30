@@ -13,11 +13,14 @@ const
      BD_DIRECCIONKAREL           = $02;
 
 
+
+
      BD_STACK                    = $04;
      BD_CALLSTACK                = $08;
      BD_PC                       = $10;
      BD_CUENTAINSTRUCCIONES      = $20;
      BD_HEAP                     = $40;
+     BD_MOCHILA                  = $80; 
 
      RESEJE_ERROR                = -1;
      RESEJE_OK                   = 0;
@@ -204,6 +207,15 @@ begin
             nodoi:=nodo.NodeNew('comando');
             nodoi.WriteAttributeString('nombre',CMD_NOMBRES[i]);
             nodoi.WriteAttributeInteger('cuenta',_cuentaInstrucciones[i]);
+        end;
+     end;
+
+     if (banderas and BD_MOCHILA) <> 0 then begin
+        nodo:=unNodo.NodeNew('mochila');
+        if mochilaKarel <> $FFFF then begin
+          nodo.WriteAttributeInteger('valor',mochilaKarel);
+        end else begin
+          nodo.WriteAttributeString('valor','INFINITO');
         end;
      end;
 
