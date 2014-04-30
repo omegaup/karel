@@ -81,6 +81,7 @@ var
    dumpPosicionKarel : boolean = false;
    dumpDireccionKarel : boolean = false;
    dumpInstrucciones : boolean = false;
+   dumpMochila : boolean = false;
 
 
 procedure escribeBitacora(const msg : string);
@@ -206,6 +207,7 @@ begin
                if dumpPosicionKarel then banderasDump:=banderasDump or BD_POSICIONKAREL;
                if dumpDireccionKarel then banderasDump:=banderasDump or BD_DIRECCIONKAREL;
                if dumpInstrucciones then banderasDump:=banderasDump or BD_CUENTAINSTRUCCIONES;
+               if dumpMochila then banderasDump:=banderasDump or BD_MOCHILA;
                entorno.dumpEstadoEntorno(nodoa,banderasDump);
            end;
 
@@ -275,6 +277,9 @@ begin
          end
          else if stCmd = '-oi' then begin
               dumpInstrucciones:=false;
+         end
+         else if stCmd = '-ob' then begin
+              dumpMochila:=false;
          end
          else if stCmd = '-p1' then begin
               Inc(i);
@@ -481,6 +486,8 @@ begin
                                           dumpDireccionKarel:=true;
                                       end else if _tipoDespliega = 'INSTRUCCIONES' then begin
                                           dumpInstrucciones:=true;
+                                      end else if _tipoDespliega = 'MOCHILA' then begin
+                                          dumpMochila:=true;
                                       end;
                                   end;
                               end;
