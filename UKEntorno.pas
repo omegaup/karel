@@ -8,7 +8,7 @@ uses
     UKMundo, UKProgramaCompilado;
 
 const
-     BD_KAREL                    = $03;
+     BD_KAREL                    = $83;
      BD_POSICIONKAREL            = $01;
      BD_DIRECCIONKAREL           = $02;
 
@@ -180,6 +180,15 @@ begin
         if (banderas and BD_DIRECCIONKAREL) <> 0 then begin
            nodo.WriteAttributeString('direccion',DescDireccion(direccionKarel));
         end;
+
+
+        if (banderas and BD_MOCHILA) <> 0 then begin
+          if mochilaKarel <> $FFFF then begin
+            nodo.WriteAttributeInteger('mochila',mochilaKarel);
+          end else begin
+            nodo.WriteAttributeString('mochila','INFINITO');
+          end;
+        end;
      end;
 
      if (banderas and BD_STACK) <> 0 then begin
@@ -210,14 +219,7 @@ begin
         end;
      end;
 
-     if (banderas and BD_MOCHILA) <> 0 then begin
-        nodo:=unNodo.NodeNew('mochila');
-        if mochilaKarel <> $FFFF then begin
-          nodo.WriteAttributeInteger('valor',mochilaKarel);
-        end else begin
-          nodo.WriteAttributeString('valor','INFINITO');
-        end;
-     end;
+
 
      if (banderas and BD_HEAP) <> 0 then begin
         nodo:=unNodo.nodeNew('heap');
