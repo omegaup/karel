@@ -1,1 +1,5 @@
-/__history
+__history/
+backup/
+karel
+kcl
+lib/
