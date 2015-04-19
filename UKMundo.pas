@@ -237,7 +237,7 @@ function TKMundo.escribeAXML(nodo : TXMLNode; compresionDeCeros : boolean = true
 var
    nodoMundo, nodoLinea : TXMLNode;
    i, j, z : integer;
-   sLinea : string;
+   sLinea : AnsiString;
    ponCoordenada : boolean;
 begin
      // ESCRIBE A UN XML EL RESULTADO DE LOS ZUMBADORES EN UN MUNDO
