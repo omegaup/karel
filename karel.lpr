@@ -40,6 +40,7 @@ var
    stCmd, stNombre, st : AnsiString;
    stParams : array [1..50] of string;
    _finEjecucion : boolean = false;
+   _ejecucionCorrecta: boolean = false;
    breakPoint : boolean = false;
    continuaEjecucion : boolean = false;
    desatendido : boolean = false;
@@ -429,7 +430,7 @@ begin
 
            if _listaMundos.Count = 0 then begin
               writeln(StdErr, 'ERROR|No se especifico ningun mundo valido');
-              halt;
+              halt(1);
            end;
 
            // LEE Y CARGA LOS PROGRAMAS
@@ -518,7 +519,7 @@ begin
 
            if _listaEntornos.Count = 0 then begin
               writeln(StdErr, 'ERROR|No se especifico ningun programa valido');
-              halt;
+              halt(1);
            end;
 
            // INICIA LA EJECUCION
@@ -529,6 +530,9 @@ begin
               hiloLecturaComandos.WaitFor();
            end;
 
+           if TKEntornoEjecucion(_listaEntornos.Objects[0]).resultadoUltimaEjecucion = RESEJE_FINPROGRAMA then begin
+              _ejecucionCorrecta := true;
+           end;
            writeln(StdErr, 'OK|' + descEjecucion(TKEntornoEjecucion(_listaEntornos.Objects[0]).resultadoUltimaEjecucion));
            hazDumpResultados(_archivoResultado);
 
@@ -539,6 +543,9 @@ begin
            On E : Exception do begin
               writeln(StdErr, 'ERROR|Error al cargar XML de especificaciones (' + E.Message + ')');
            end;
+     end;
+     if not _ejecucionCorrecta then begin
+        halt(1);
      end;
 end.
 
