@@ -3,3 +3,9 @@ backup/
 karel
 kcl
 lib/
+
+# Debian packaging
+debian/files
+debian/omegaup-karel.debhelper.log
+debian/omegaup-karel.substvars
+debian/omegaup-karel
