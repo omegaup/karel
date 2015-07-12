@@ -1,0 +1,15 @@
+Source: omegaup-karel
+Section: contrib/devel
+Priority: optional
+Maintainer: lhchavez <lhchavez@omegaup.com>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: https://github.com/omegaup/karel/
+Vcs-Git: git://github.com/omegaup/karel.git
+Vcs-Browser: https://github.com/omegaup/karel/
+
+Package: omegaup-karel
+Architecture: any
+Depends:
+Description: OMI Karel
+ The karel compiler and interpreter for omegaUp.
