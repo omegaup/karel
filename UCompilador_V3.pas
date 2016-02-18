@@ -173,7 +173,7 @@ implementation
 
 var
    // CONJUNTOS
-   ChrLetras : set of char = ['a'..'z','A'..'Z','_'];
+   ChrLetras : set of char = ['a'..'z','A'..'Z','_','á','Á','é','É','í','Í','ó','Ó','ú','Ú'];
    ChrSeparadores : set of char = [';',',','.','(',')','[',']',':','{','}',#39,'<','>','=','^','+','-','*','&','|','!'];
    ChrNumeros : set of char = ['0'..'9'];
    ChrEspacioEnBlanco : set of char = [' ',#10,#13,#9];
@@ -340,12 +340,16 @@ begin
      resultadoCompilacion.InsertaComando(CMD_JMP,0,0,0);
 
      {$region ' Compila todas las declaraciones de procedimiento '}
-       while (tokenActual^.Token = 'DEFINE-NUEVA-INSTRUCCION') or (tokenActual^.Token = 'EXTERNO') or (tokenActual^.Token = 'DEFINE-PROTOTIPO-INSTRUCCION') do begin
-             if tokenActual^.Token = 'DEFINE-NUEVA-INSTRUCCION' then begin
+       while (tokenActual^.Token = 'DEFINE-NUEVA-INSTRUCCION') 
+        or (tokenActual^.Token = 'DEFINE-NUEVA-INSTRUCCIÓN') 
+        or (tokenActual^.Token = 'EXTERNO') 
+        or (tokenActual^.Token = 'DEFINE-PROTOTIPO-INSTRUCCION')
+        or (tokenActual^.Token = 'DEFINE-PROTOTIPO-INSTRUCCIÓN') do begin
+             if (tokenActual^.Token = 'DEFINE-NUEVA-INSTRUCCION') or (tokenActual^.Token = 'DEFINE-NUEVA-INSTRUCCIÓN') then begin
                 // ES UNA DECLARACION DE PROCEDIMIENTO
                 CompilaDeclaracionDeProcedimiento;
              end
-             else if tokenActual^.Token = 'DEFINE-PROTOTIPO-INSTRUCCION' then begin
+             else if (tokenActual^.Token = 'DEFINE-PROTOTIPO-INSTRUCCION') or (tokenActual^.Token = 'DEFINE-PROTOTIPO-INSTRUCCIÓN') then begin
                   CompilaDeclaracionDePrototipo;
              end
              else begin
@@ -356,12 +360,12 @@ begin
      {$endregion}
 
      {$region ' Comila el bloque del ciclo principal del programa '}
-       if tokenActual^.Token = 'INICIA-EJECUCION' then begin
+       if (tokenActual^.Token = 'INICIA-EJECUCION') or (tokenActual^.Token = 'INICIA-EJECUCIÓN') then begin
           resultadoCompilacion.InsertaComando(CMD_JMP,resultadoCompilacion.PC,0,0,0);
           avanzaToken; // AVANZA AL SIGUIENTE TOKEN
           CompilaExpresionGeneral;
-          if tokenActual^.Token <> 'TERMINA-EJECUCION' then begin
-             raise Exception.Create('Se esperaba la palabra clave "TERMINA-EJECUCION" al final del bloque del programa');
+          if (tokenActual^.Token <> 'TERMINA-EJECUCION') and (tokenActual^.Token <> 'TERMINA-EJECUCIÓN') then begin
+             raise Exception.Create('Se esperaba la palabra clave "TERMINA-EJECUCIÓN" al final del bloque del programa');
           end
           else begin
                // TERMINO OK, FIN DEL PROGRAMA
@@ -442,7 +446,7 @@ begin
      }
      CompilaClausulaNo(varNameList);
 
-     while tokenActual^.Token = 'Y' do begin
+     while (tokenActual^.Token = 'Y') or (tokenActual^.Token = 'E') do begin
            // SI HAY UN NUEVO TERMINO, METE EL ULTIMO RESULTADO A LA PILA
            resultadoCompilacion.InsertaComando(CMD_PUSHREG,0,0,0);
 
@@ -477,7 +481,7 @@ begin
                                          Expresion
      }
 
-     if tokenActual^.Token <> 'DEFINE-NUEVA-INSTRUCCION' then begin
+     if (tokenActual^.Token <> 'DEFINE-NUEVA-INSTRUCCION') AND (tokenActual^.Token <> 'DEFINE-NUEVA-INSTRUCCIÓN') then begin
         raise Exception.Create('Se esperaba palabra clave "DEFINE-NUEVA-INSTRUCCION" en la linea ' + IntToStr(tokenActual^.Linea) + ' posicion ' + IntToStr(tokenActual^.Posicion));
         exit;
      end;
@@ -572,8 +576,8 @@ var
    LPC : integer;
 begin
      {$region ' Verifica que no venga de ningun lugar inesperado '}
-       if tokenActual^.Token <> 'DEFINE-PROTOTIPO-INSTRUCCION' then begin
-          raise Exception.Create('Se esperaba palabra clave "DEFINE-PROTOTIPO-INSTRUCCION" en la linea ' + IntToStr(tokenActual^.Linea) + ' posicion ' + IntToStr(tokenActual^.Posicion));
+       if (tokenActual^.Token <> 'DEFINE-PROTOTIPO-INSTRUCCION') and (tokenActual^.Token <> 'DEFINE-PROTOTIPO-INSTRUCCIÓN') then begin
+          raise Exception.Create('Se esperaba palabra clave "DEFINE-PROTOTIPO-INSTRUCCIÓN" en la linea ' + IntToStr(tokenActual^.Linea) + ' posicion ' + IntToStr(tokenActual^.Posicion));
           exit;
        end;
      {$endregion}
@@ -683,7 +687,7 @@ begin
                        }{
 
      }}
-     if tokenActual^.Token = 'APAGATE' then begin
+     if (tokenActual^.Token = 'APAGATE') or (tokenActual^.Token = 'APÁGATE') then begin
         resultadoCompilacion.InsertaComando(CMD_DEBUG,tokenActual^.Linea);
         resultadoCompilacion.InsertaComando(CMD_APAGATE,0,0,0);
         avanzaToken;
@@ -708,7 +712,7 @@ begin
           resultadoCompilacion.InsertaComando(CMD_DEJAZUM,0,0,0);
           avanzaToken;
      end
-     else if tokenActual^.Token = 'SAL-DE-INSTRUCCION' then begin
+     else if (tokenActual^.Token = 'SAL-DE-INSTRUCCION') or (tokenActual^.Token = 'SAL-DE-INSTRUCCIÓN') then begin
           resultadoCompilacion.InsertaComando(CMD_DEBUG,tokenActual^.Linea);
 
           if VarNameList <> nil then
@@ -885,10 +889,10 @@ end;
 
 procedure TKCompilador.CompilaExpresionGeneral(varNameList: TList);
 begin
-     while (tokenActual^.Token <> 'FIN') and (tokenActual^.Token <> 'TERMINA-EJECUCION') do begin
+     while (tokenActual^.Token <> 'FIN') and (tokenActual^.Token <> 'TERMINA-EJECUCION') and (tokenActual^.Token <> 'TERMINA-EJECUCIÓN') do begin
           CompilaExpresion(varNameList);
 
-          if (tokenActual^.Token <> ';') and (tokenActual^.Token <> 'FIN') and (tokenActual^.Token <> 'TERMINA-EJECUCION') then begin
+          if (tokenActual^.Token <> ';') and (tokenActual^.Token <> 'FIN') and (tokenActual^.Token <> 'TERMINA-EJECUCION') and (tokenActual^.Token <> 'TERMINA-EJECUCIÓN') then begin
              raise Exception.Create('Se esperaba ";" en la linea ' + IntToStr(tokenActual^.Linea) + ' posicion ' + IntToStr(tokenActual^.Posicion));
           end
           else if tokenActual^.Token = ';' then begin
@@ -1007,7 +1011,7 @@ begin
      CompilaExpresion(VarNameList);
 
      {$region ' Checa si hay un else '}
-       if tokenActual^.Token = 'SINO' then begin
+       if (tokenActual^.Token = 'SINO') or (tokenActual^.Token = 'SI-NO')then begin
           LElse:=resultadoCompilacion.PC;
           resultadoCompilacion.InsertaComando(CMD_JMP); // SALTO PARA EVITAR LA PARTE DE CODIGO DEL ELSE
 
@@ -1084,11 +1088,11 @@ begin
           resultadoCompilacion.InsertaComando(CMD_B_NJAZ,0,0,0);
           avanzaToken;
      end
-     else if tokenActual^.Token = 'ALGUN-ZUMBADOR-EN-LA-MOCHILA' then begin
+     else if (tokenActual^.Token = 'ALGUN-ZUMBADOR-EN-LA-MOCHILA') or (tokenActual^.Token = 'ALGÚN-ZUMBADOR-EN-LA-MOCHILA') then begin
           resultadoCompilacion.InsertaComando(CMD_B_AZELM,0,0,0);
           avanzaToken;
      end
-     else if tokenActual^.Token = 'NINGUN-ZUMBADOR-EN-LA-MOCHILA' then begin
+     else if (tokenActual^.Token = 'NINGUN-ZUMBADOR-EN-LA-MOCHILA') or (tokenActual^.Token = 'NINGÚN-ZUMBADOR-EN-LA-MOCHILA') then begin
           resultadoCompilacion.InsertaComando(CMD_B_NZELM,0,0,0);
           avanzaToken;
      end
@@ -1206,7 +1210,7 @@ begin
      }
      CompilaClausulaY(varNameList);
 
-     while tokenActual^.Token = 'O' do begin
+     while (tokenActual^.Token = 'O') or (tokenActual^.Token = 'U') do begin
            // SI HAY UN NUEVO TERMINO, METE EL ULTIMO RESULTADO A LA PILA
            resultadoCompilacion.InsertaComando(CMD_PUSHREG,0,0,0);
            resultadoCompilacion.SP:=resultadoCompilacion.SP + 1;
