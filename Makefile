@@ -18,3 +18,4 @@ clean:
 	rm -rf lib
 	rm -f kcl
 	rm -f karel
+	rm -f *.o *.ppu *.rst

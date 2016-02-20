@@ -3,6 +3,9 @@ backup/
 karel
 kcl
 lib/
+*.o
+*.ppu
+*.rst
 
 # Debian packaging
 debian/files
