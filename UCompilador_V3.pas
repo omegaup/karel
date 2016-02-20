@@ -2629,8 +2629,11 @@ begin
                       NToken^.Token:=ObtenCadenaHasta(#39,true);
                  end
               else begin
-                   raise Exception('Se detecto el caracter invalido ' + codigo[posicionCodigo] + ' en la linea ' + IntToStr(lineaCodigo) +
-                           ' posicion ' + IntToStr(posicionLineaCodigo));
+                   result:=RES_ERR;
+                   ErrMsg:='Se detecto el caracter invalido ' + codigo[posicionCodigo] + ' en la linea ' + IntToStr(lineaCodigo) +
+                           ' posicion ' + IntToStr(posicionLineaCodigo);
+                   EOFToken:=true;
+                   Exit;
               end;
            end
            else begin
