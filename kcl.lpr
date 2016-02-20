@@ -93,116 +93,123 @@ begin
      writeln('Compilador de linea para Karel OMI version - ' + version);
      writeln('');
 
-     // LEE LOS PARAMETROS DE ENTRADA
-     i:=1;
-     while i <= ParamCount do begin
-           param:=ParamStr(i);
-           if param = '-c' then begin
-              aCodigo:=obtenNombreDeArchivo(i);
-           end
-           else if param = '-d' then begin
-                depuracion:=true;
-           end
-           else if param = '-lj' then begin
-                lenguaje:=LANG_JAVA;
-           end
-           else if param = '-lp' then begin
-                lenguaje:=LANG_PASCAL;
-           end
-           else if param = '-o' then begin
-                aSalida:=obtenNombreDeArchivo(i);
-           end
-           else if param = '-cond' then begin
-                aCondiciones:=obtenNombreDeArchivo(i);
-           end;
-           Inc(i);
-     end;
-
-     if aCodigo = '' then begin
-        writeln(strAyuda);
-        exit;
-     end;
-
-     st:=UpperCase(ExtractFileExt(aCodigo));
-     if aSalida = '' then begin
-        aSalida:=Copy(aCodigo,1,Length(aCodigo) - Length(st)) + '.kx';
-     end;
-
-     if lenguaje = LANG_NODEFINIDO then begin
-        if st = '.PAS' then
-           lenguaje:=LANG_PASCAL
-        else if st = '.JS' then
-             lenguaje:=LANG_JAVA
-        else
-            salConError('Falta especificar el lenguaje de compilacion');
-     end;
-
-     // REVISA QUE TODO EXISTA Y SEA VALIDO
-     if Not(FileExists(aCodigo)) then begin
-        salConError('No fue posible encontrar el archivo de codigo (' + aCodigo + ')');
-     end;
-
-     if aCondiciones <> '' then begin
-        if FileExists(aCondiciones) then begin
-           xml:=TNativeXML.Create(nil);
-           try
-              xml.LoadFromFile(aCondiciones);
-           except
-                 On E : Exception do begin
-                    xml.Free;
-                    salConError('Error al cargar el archivo de condiciones (' + E.Message + ')');
-                 end;
-           end;
-        end
-        else begin
-             salConError('No fue posible encontrar el archivo de condiciones (' + aCondiciones + ')');
-        end;
-     end;
-
-     // EJECUTA EL COMPILADOR.
-     compilador:=TKCompilador.Create;
-     compilador.infoDepuracion:=depuracion;
-
-     // LEE EL CODIGO
-     sCodigo:='';
      try
-        AssignFile(fCodigo,aCodigo);
-        try
-           Reset(fCodigo);
-           while not(eof(fCodigo)) do begin
-                 readln(fCodigo,st);
-                 sCodigo:=sCodigo + st + #13#10;
-           end;
-        finally
-               CloseFile(fCodigo);
+         // LEE LOS PARAMETROS DE ENTRADA
+         i:=1;
+         while i <= ParamCount do begin
+               param:=ParamStr(i);
+               if param = '-c' then begin
+                  aCodigo:=obtenNombreDeArchivo(i);
+               end
+               else if param = '-d' then begin
+                    depuracion:=true;
+               end
+               else if param = '-lj' then begin
+                    lenguaje:=LANG_JAVA;
+               end
+               else if param = '-lp' then begin
+                    lenguaje:=LANG_PASCAL;
+               end
+               else if param = '-o' then begin
+                    aSalida:=obtenNombreDeArchivo(i);
+               end
+               else if param = '-cond' then begin
+                    aCondiciones:=obtenNombreDeArchivo(i);
+               end;
+               Inc(i);
+         end;
+
+         if aCodigo = '' then begin
+            writeln(strAyuda);
+            exit;
+         end;
+
+         st:=UpperCase(ExtractFileExt(aCodigo));
+         if aSalida = '' then begin
+            aSalida:=Copy(aCodigo,1,Length(aCodigo) - Length(st)) + '.kx';
+         end;
+
+         if lenguaje = LANG_NODEFINIDO then begin
+            if st = '.PAS' then
+               lenguaje:=LANG_PASCAL
+            else if st = '.JS' then
+                 lenguaje:=LANG_JAVA
+            else
+                salConError('Falta especificar el lenguaje de compilacion');
+         end;
+
+         // REVISA QUE TODO EXISTA Y SEA VALIDO
+         if Not(FileExists(aCodigo)) then begin
+            salConError('No fue posible encontrar el archivo de codigo (' + aCodigo + ')');
+         end;
+
+         if aCondiciones <> '' then begin
+            if FileExists(aCondiciones) then begin
+               xml:=TNativeXML.Create(nil);
+               try
+                  xml.LoadFromFile(aCondiciones);
+               except
+                     On E : Exception do begin
+                        xml.Free;
+                        salConError('Error al cargar el archivo de condiciones (' + E.Message + ')');
+                     end;
+               end;
+            end
+            else begin
+                 salConError('No fue posible encontrar el archivo de condiciones (' + aCondiciones + ')');
+            end;
+         end;
+
+         // EJECUTA EL COMPILADOR.
+         compilador:=TKCompilador.Create;
+         compilador.infoDepuracion:=depuracion;
+
+         // LEE EL CODIGO
+         sCodigo:='';
+         try
+            AssignFile(fCodigo,aCodigo);
+            try
+               Reset(fCodigo);
+               while not(eof(fCodigo)) do begin
+                     readln(fCodigo,st);
+                     sCodigo:=sCodigo + st + #13#10;
+               end;
+            finally
+                   CloseFile(fCodigo);
+            end;
+         except
+               On E : Exception do begin
+                  salConError('Error al cargar archivo de codigo (' + E.Message + ')');
+               end;
+         end;
+
+         programa:=compilador.compilaPrograma(lenguaje,sCodigo);
+         if programa <> nil then begin
+            // APLICA LAS CONDICIONES DE COMPILACION SI ERA NECESARIO
+            {TODO : Aplicacion de condiciones de compilacion}
+
+            // INTENTA GRABAR EL CODIGO COMPILADO
+            if Not(programa.guardaAArchivo(aSalida)) then begin
+               salConError('Error al guardar codigo compilado (' + programa.errMsg + ')');
+            end;
+
+            writeln(prefijoOK + resumenParametros + programa.resumenCompilacion);
+         end
+         else begin
+              salConError(compilador.errMsg);
+         end;
+
+         programa.Free;
+         compilador.Free;
+         if Assigned(xml) then
+            xml.Free;
+    except
+        On E : Exception do begin
+            writeln(StdErr, prefijoError +
+                    resumenParametros +
+                    'Error general al compilar: ' + E.Message);
+            DumpExceptionBackTrace(StdErr);
+            Halt(1);
         end;
-     except
-           On E : Exception do begin
-              salConError('Error al cargar archivo de codigo (' + E.Message + ')');
-           end;
-     end;
-
-     programa:=compilador.compilaPrograma(lenguaje,sCodigo);
-     if programa <> nil then begin
-        // APLICA LAS CONDICIONES DE COMPILACION SI ERA NECESARIO
-        {TODO : Aplicacion de condiciones de compilacion}
-
-        // INTENTA GRABAR EL CODIGO COMPILADO
-        if Not(programa.guardaAArchivo(aSalida)) then begin
-           salConError('Error al guardar codigo compilado (' + programa.errMsg + ')');
-        end;
-
-        writeln(prefijoOK + resumenParametros + programa.resumenCompilacion);
-     end
-     else begin
-          salConError(compilador.errMsg);
-     end;
-
-     programa.Free;
-     compilador.Free;
-     if Assigned(xml) then
-        xml.Free;
-
-
+    end;
 end.
-
