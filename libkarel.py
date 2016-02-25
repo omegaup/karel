@@ -114,7 +114,7 @@ class KarelOutput:
 		self.x = None
 		self.y = None
 		self.direccion = None
-		if karel:
+		if karel is not None:
 			if 'x' in karel.attrib:
 				self.x = int(karel.attrib['x'])
 				self.y = int(karel.attrib['y'])
