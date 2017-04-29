@@ -83,6 +83,7 @@ var
    dumpDireccionKarel : boolean = false;
    dumpInstrucciones : boolean = false;
    dumpMochila : boolean = false;
+   dumpUniverso : boolean = false;
 
 
 procedure escribeBitacora(const msg : string);
@@ -189,12 +190,12 @@ begin
            xml.XmlFormat:=xfReadable;
            xml.Root.Name:='resultados';
 
-           if dumpMundo then begin
+           if (dumpMundo) or (dumpUniverso) then begin
               nodo:=xml.Root.NodeNew('mundos');
 
               for i:=0 to _listaMundos.Count - 1 do begin
                   mundo:=TKMundo(_listaMundos.Objects[i]);
-                  mundo.escribeAXML(nodo,true,_listaMundos[i],true);
+                  mundo.escribeAXML(nodo,true,_listaMundos[i], not dumpUniverso);
               end;
            end;
 
@@ -489,6 +490,8 @@ begin
                                           dumpInstrucciones:=true;
                                       end else if _tipoDespliega = 'MOCHILA' then begin
                                           dumpMochila:=true;
+                                      end else if _tipoDespliega = 'UNIVERSO' then begin
+                                          dumpUniverso:=true;
                                       end;
                                   end;
                               end;
