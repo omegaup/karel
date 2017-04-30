@@ -111,15 +111,29 @@ class KarelOutput:
 		self.resultado = self.root.find('programas/programa').attrib['resultadoEjecucion']
 		self.error = self.resultado != 'FIN PROGRAMA'
 		karel = self.root.find('programas/programa/karel')
+		instructions = self.root.find('programas/programa/karel')
 		self.x = None
 		self.y = None
 		self.direccion = None
+		self.avanza = None
+		self.gira_izquierda = None
+		self.coge_zumbador = None
+		self.deja_zumbador = None
 		if karel is not None:
 			if 'x' in karel.attrib:
 				self.x = int(karel.attrib['x'])
 				self.y = int(karel.attrib['y'])
 			if 'direccion' in karel.attrib:
 				self.direccion = karel.attrib['direccion']
+		if instructions is not None:
+			if 'avanza' in instructions.attrib
+				self.avanza = int(instructions.attrib['avanza'])
+			if 'gira_izquierda' in instructions.attrib
+				self.gira_izquierda = int(instructions.attrib['gira_izquierda'])
+			if 'coge_zumbador' in instructions.attrib
+				self.coge_zumbador = int(instructions.attrib['coge_zumbador'])
+			if 'deja_zumbador' in instructions.attrib
+				self.deja_zumbador = int(instructions.attrib['deja_zumbador'])
 
 	def __repr__(self):
 		"""Imprime una versión bonita del objeto"""
